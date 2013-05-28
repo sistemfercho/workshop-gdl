@@ -25,7 +25,6 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="communication-adapter" />
-        <module name="credit-bureau" />
         <module name="credit-bureau (2)" />
         <module name="credit-manager" />
       </profile>

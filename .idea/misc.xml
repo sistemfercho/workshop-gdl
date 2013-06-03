@@ -16,6 +16,7 @@
   <component name="ClearCaseSharedConfig">
     <option name="myUseUcmModel" value="true" />
   </component>
+  <component name="CppTools.Loader" reportImplicitCastToBool="false" reportNameReferencedOnce="false" warnedAboutFileOutOfSourceRoot="true" version="3" currentProject="$PROJECT_DIR$/workshop/credit-bureau/src/c/Makefile" compilerSelect="AUTO" />
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>

@@ -7,6 +7,7 @@
 
 target
 **/*.class
+credit-bureau
 
 # Ignore IntelliJ Stuff
 .idea/workspace.xml
@@ -24,3 +25,5 @@ reminders.txt
 *.swp
 
 # Ignore CMake stuff
+**/CMakeFiles
+

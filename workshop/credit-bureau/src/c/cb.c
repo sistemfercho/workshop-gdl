@@ -8,9 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <winsock2.h>
 #include <unistd.h>
 
 #define PORT 3550 /* El puerto que será abierto */
@@ -21,26 +19,60 @@ void doprocessing (int sock)
     int n;
     char buffer[256];
 
-    bzero(buffer,256);
+    memset(&(buffer), '0', 256);
+    int recvMsgSize;
+    
+    /* Receive message from client */
+    if ((recvMsgSize = recv(sock, buffer, 256, 0)) < 0)
+        perror("ERROR reading to socket");
 
-    n = read(sock,buffer,255);
-    if (n < 0)
+    /* Send received string and receive again until end of transmission */
+    while (recvMsgSize > 0)      /* zero indicates end of transmission */
     {
-        perror("ERROR reading from socket");
-        exit(1);
+        /* Echo message back to client */
+        if (send(sock, buffer, recvMsgSize, 0) != recvMsgSize)
+            perror("ERROR writing to socket");
+
+        /* See if there is more data to receive */
+        if ((recvMsgSize = recv(sock, buffer, 256, 0)) < 0)
+            perror("ERROR reading to socket");
     }
-    printf("Here is the message: %s\n",buffer);
-    n = write(sock,"I got your message",18);
-    if (n < 0)
-    {
-        perror("ERROR writing to socket");
-        exit(1);
-    }
+
+    closesocket(sock);    /* Close client socket */
+}
+
+BOOL initW32() 
+{
+		WSADATA wsaData;
+		WORD version;
+		int error;
+		
+		version = MAKEWORD( 2, 0 );
+		
+		error = WSAStartup( version, &wsaData );
+		
+		/* check for error */
+		if ( error != 0 )
+		{
+		    /* error occured */
+		    return FALSE;
+		}
+		
+		/* check for correct version */
+		if ( LOBYTE( wsaData.wVersion ) != 2 ||
+		     HIBYTE( wsaData.wVersion ) != 0 )
+		{
+		    /* incorrect WinSock version */
+		    WSACleanup();
+		    return FALSE;
+		}	
 }
 
 int main()
 {
 
+	 initW32(); /* Necesaria para compilar en Windows */ 
+	 	
    int fd, fd2; /* los descriptores de archivos */
 
    /* para la información de la dirección del servidor */
@@ -95,24 +127,9 @@ int main()
 
       send(fd2,"Bienvenido a mi servidor.\n",22,0);
       /* que enviará el mensaje de bienvenida al cliente */
+      
+      doprocessing(fd2);
 
-      /* Create child process */
-      pid = fork();
-      if (pid < 0) {
-          perror("ERROR on fork");
-           exit(-1);
-      }
-      if (pid == 0)
-      {
-          /* This is the client process */
-          close(fd);
-          doprocessing(fd2);
-          exit(0);
-      }
-      else
-      {
-          close(fd2);
-      }
    } /* end while */
 }
 

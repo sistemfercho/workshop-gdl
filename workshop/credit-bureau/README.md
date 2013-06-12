@@ -21,3 +21,10 @@ Instrucciones para compilar
     `cmake .`
 3. Compilar el programa con la siguiente instruccion:
     `make`
+
+	
+	
+	
+	
+	
+	gcc cb.c -lws2_32

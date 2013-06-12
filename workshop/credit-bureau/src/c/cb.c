@@ -11,7 +11,7 @@
 #include <winsock2.h>
 #include <unistd.h>
 
-#define PORT 3550 /* El puerto que será abierto */
+#define PORT 50000 /* El puerto que será abierto */
 #define BACKLOG 2 /* El número de conexiones permitidas */
 
 void doprocessing (int sock)
@@ -19,23 +19,48 @@ void doprocessing (int sock)
     int n;
     char buffer[256];
 
-    memset(&(buffer), '0', 256);
-    int recvMsgSize;
+    //memset(&(buffer), '0', 256);
+	memset(buffer, 0, 255);
+	char mystring [100];
+    char * tmp;
+    FILE * pFile;   //the file handling
+  
+   int recvMsgSize;
     
     /* Receive message from client */
     if ((recvMsgSize = recv(sock, buffer, 256, 0)) < 0)
-        perror("ERROR reading to socket");
+        perror("ERROR reading to socket#######");
+		
+	printf("  %s", buffer); //checar si recibe el buffer
+	
 
+     pFile = fopen ("C:\\Users\\usuario\\Documents\\GitHub\\GDL\\workshop-gdl\\workshop\\credit-bureau\\src\\c\\Loans.txt","r");  
+	     if (pFile == NULL)
+                       perror ("Error opening file");
+         else {
+                    while (feof(pFile)==0)
+                    {
+                           tmp =  fgets (mystring , sizeof(mystring) , pFile);
+                           if (strstr(mystring, buffer))
+                           puts (tmp);
+
+                     }
+			 }
+
+	
     /* Send received string and receive again until end of transmission */
     while (recvMsgSize > 0)      /* zero indicates end of transmission */
     {
         /* Echo message back to client */
         if (send(sock, buffer, recvMsgSize, 0) != recvMsgSize)
-            perror("ERROR writing to socket");
+            perror("ERROR writing to socket&&&&&&&&&&");
 
         /* See if there is more data to receive */
         if ((recvMsgSize = recv(sock, buffer, 256, 0)) < 0)
-            perror("ERROR reading to socket");
+            perror("ERROR reading to socket$$$$$$$$$");
+			
+			
+	
     }
 
     closesocket(sock);    /* Close client socket */
@@ -68,6 +93,35 @@ BOOL initW32()
 		}	
 }
 
+
+ int leerfc(char rfc [256])
+ {
+    char mystring [100];
+    char * tmp;
+    FILE * pFile;   //the file handling
+   // char c;
+    pFile = fopen ("C:/Users/usuario/Documents/GitHub/GDL/workshop-gdl/workshop/credit-bureau/src/c/Loans.txt","r");  
+
+/*    while ((c = getc(fp)) != EOF)                                      
+    {
+        
+        printf("%c",c);                                                
+    }  
+	*/
+	
+	while (feof(pFile)==0)
+             {
+                tmp =  fgets (mystring , sizeof(mystring) , pFile);
+                 if (strstr(mystring, rfc))
+                 puts (tmp);
+
+             }
+   fclose(pFile);
+   return 0;   
+ }
+
+ 
+ 
 int main()
 {
 
@@ -121,11 +175,9 @@ int main()
          printf("error en accept()\n");
          exit(-1);
       }
-
       printf("Se obtuvo una conexión desde %s\n", inet_ntoa(client.sin_addr) );
       /* que mostrará la IP del cliente */
-
-      send(fd2,"Bienvenido a mi servidor.\n",22,0);
+      //send(fd2,"Bienvenido a mi servidor.\n",256,0);
       /* que enviará el mensaje de bienvenida al cliente */
       
       doprocessing(fd2);

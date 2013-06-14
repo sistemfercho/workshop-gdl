@@ -19,38 +19,27 @@ void doprocessing (int sock)
     int n;
     char buffer[256];
 
-    //memset(&(buffer), '0', 256);
-	memset(buffer, 0, 255);
-	char mystring [100];
-    char * tmp;
-    FILE * pFile;   //the file handling
-  
+   memset(&(buffer), '0', 256);
+   //emset(buffer, 0, 255);
    int recvMsgSize;
     
     /* Receive message from client */
     if ((recvMsgSize = recv(sock, buffer, 256, 0)) < 0)
         perror("ERROR reading to socket#######");
 		
-	printf("  %s", buffer); //checar si recibe el buffer
-	
 
-     pFile = fopen ("C:\\Users\\usuario\\Documents\\GitHub\\GDL\\workshop-gdl\\workshop\\credit-bureau\\src\\c\\Loans.txt","r");  
-	     if (pFile == NULL)
-                       perror ("Error opening file");
-         else {
-                    while (feof(pFile)==0)
-                    {
-                           tmp =  fgets (mystring , sizeof(mystring) , pFile);
-                           if (strstr(mystring, buffer))
-                           puts (tmp);
-
-                     }
-			 }
+		
+	printf("  %s\n\n", buffer); //checar si recibe el buffer
+	 		 
 
 	
     /* Send received string and receive again until end of transmission */
     while (recvMsgSize > 0)      /* zero indicates end of transmission */
     {
+	    buffer[recvMsgSize-1]='\0';
+	    leerrfc(buffer);
+		memset(&(buffer),'0',256);
+		
         /* Echo message back to client */
         if (send(sock, buffer, recvMsgSize, 0) != recvMsgSize)
             perror("ERROR writing to socket&&&&&&&&&&");
@@ -94,31 +83,60 @@ BOOL initW32()
 }
 
 
- int leerfc(char rfc [256])
- {
-    char mystring [100];
-    char * tmp;
-    FILE * pFile;   //the file handling
-   // char c;
-    pFile = fopen ("C:/Users/usuario/Documents/GitHub/GDL/workshop-gdl/workshop/credit-bureau/src/c/Loans.txt","r");  
+	 
+int leerrfc(char* buffer, int sock)
+{	 
+   FILE * pFile;
+   char mystring [100];
+   boolean found=FALSE;
+   
 
-/*    while ((c = getc(fp)) != EOF)                                      
-    {
-        
-        printf("%c",c);                                                
-    }  
-	*/
-	
-	while (feof(pFile)==0)
+
+   pFile = fopen ("Loans.txt" , "r");
+
+   if (pFile == NULL)
+        perror ("Error opening file");
+      else {
+
+             while (feof(pFile)==0)
              {
-                tmp =  fgets (mystring , sizeof(mystring) , pFile);
-                 if (strstr(mystring, rfc))
-                 puts (tmp);
+                fgets (mystring , sizeof(mystring) , pFile);
 
+                 if (strncmp(mystring+4,buffer,10)==0){
+                     puts (mystring);
+                     //printf("%d\n",strlen(mystring));
+
+                     send(sock,mystring,strlen(mystring),0);
+                     found=TRUE;
+                 }
              }
-   fclose(pFile);
-   return 0;   
- }
+
+             if (found == FALSE)
+                send(sock,"No se encontro\n",15,0);
+        }
+    fclose (pFile);
+   return 0;
+
+
+	 /*char mystring [100];
+     char * tmp;
+	 FILE * pFile;   //the file handling
+	 
+     pFile = fopen ("Loans.txt","r");  
+	     if (pFile == NULL)
+                       perror ("Error opening file");
+         else {
+                    while (feof(pFile)==0)
+                    {
+                           tmp =  fgets (mystring , sizeof(mystring) , pFile);
+                           if (strstr(mystring, buffer))
+                           puts (tmp);
+
+                     }
+			 }
+     fclose(pFile);
+   return 0;*/
+}			 
 
  
  

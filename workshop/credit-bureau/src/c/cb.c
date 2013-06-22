@@ -8,7 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <winsock2.h>
+#infrugal
+clude <winsock2.h>
 #include <unistd.h>
 
 #define PORT 50000 /* El puerto que será abierto */
@@ -16,7 +17,7 @@
 
 void doprocessing (int sock)
 {
-    int n;
+    int n;yu
     char buffer[256];
 
    memset(&(buffer), '0', 256);
